@@ -19,5 +19,5 @@ pip install -r ./requiremets.txt
 Usage:
 
 ```bash
-python -m backend
+python -m service
 ```
