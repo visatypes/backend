@@ -1,5 +1,5 @@
 import logging
-from service.countries import app
+from service.countries.views import app
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
