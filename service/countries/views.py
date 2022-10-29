@@ -22,6 +22,10 @@ app.register_error_handler(ValidationError, handle_valid_error)
 @app.post('/api/countries/')
 def add_country():
     payload = request.json
+    
+    if not payload:
+        raise AppError('empty payload')
+
     payload["uid"] = -1
     country = Country(**payload)
     country = storage.add(country)
@@ -41,6 +45,10 @@ def get_by_id(uid):
 @app.put('/api/countries/<int:uid>')
 def update_by_id(uid):
     payload = request.json
+    
+    if not payload:
+        raise AppError('empty payload')
+
     country = Country(**payload)
     country = storage.update(uid, country)
     return country.dict(), 200
