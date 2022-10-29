@@ -1,5 +1,6 @@
-from service.countries.schems import Country
-from service.errors import AppError, NotFoundError
+from service.countries.schemas import Country
+from service.errors import NotFoundError
+
 
 class LocalStorage:
     def __init__(self):
