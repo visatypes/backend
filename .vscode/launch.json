@@ -11,6 +11,14 @@
             "module": "service",
             "console": "internalConsole",
             "justMyCode": true
+        },
+        {
+            "name": "db_create",
+            "type": "python",
+            "request": "launch",
+            "module": "service.countries.models",
+            "console": "internalConsole",
+            "justMyCode": true
         }
     ]
 }
