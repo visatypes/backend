@@ -1,28 +1,15 @@
-from flask import Flask, request
-from pydantic import ValidationError
+from flask import Blueprint, request
 
 from service.countries.schemas import Country
 from service.countries.storages import LocalStorage
 from service.errors import AppError
 
-app = Flask(__name__)
+country_view = Blueprint('countries', __name__)
 
 storage = LocalStorage()
 
 
-def handle_app_error(error: AppError):
-    return {'error': str(error)}, error.code
-
-
-def handle_valid_error(error: ValidationError):
-    return {'error': str(error)}, 400
-
-
-app.register_error_handler(AppError, handle_app_error)
-app.register_error_handler(ValidationError, handle_valid_error)
-
-
-@app.post('/api/countries/')
+@country_view.post('/')
 def add_country():
     payload = request.json
     if not payload:
@@ -34,19 +21,19 @@ def add_country():
     return country.dict(), 201
 
 
-@app.get('/api/countries/')
+@country_view.get('/')
 def get_all():
     countries = storage.get_all()
     return [country.dict() for country in countries], 200
 
 
-@app.get('/api/countries/<int:uid>')
+@country_view.get('/<int:uid>')
 def get_by_id(uid):
     country = storage.get_by_id(uid)
     return country.dict(), 200
 
 
-@app.put('/api/countries/<int:uid>')
+@country_view.put('/<int:uid>')
 def update_by_id(uid):
     payload = request.json
     if not payload:
@@ -57,7 +44,7 @@ def update_by_id(uid):
     return country.dict(), 200
 
 
-@app.delete('/api/countries/<int:uid>')
+@country_view.delete('/<int:uid>')
 def delete_country(uid):
     storage.delete(uid)
     return {}, 204
