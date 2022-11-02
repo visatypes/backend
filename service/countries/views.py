@@ -1,12 +1,12 @@
 from flask import Blueprint, request
 
 from service.countries.schemas import Country
-from service.countries.storages import LocalStorage
+from service.countries.storages import DBStorage
 from service.errors import AppError
 
 country_view = Blueprint('countries', __name__)
 
-storage = LocalStorage()
+storage = DBStorage()
 
 
 @country_view.post('/')

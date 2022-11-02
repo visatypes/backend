@@ -1,33 +1,50 @@
-from service.countries.schemas import Country
+from service.countries.schemas import Country as CountrySchema
+from service.db import db_session
 from service.errors import NotFoundError
+from service.models import CountryDB
 
 
-class LocalStorage:
-    def __init__(self):
-        self.countries: dict[int, Country] = {}
-        self.last_uid = 0
+class DBStorage:
+    name = 'countries'
 
-    def add(self, country: Country) -> Country:
-        self.last_uid += 1
-        country.uid = self.last_uid
-        self.countries[self.last_uid] = country
-        return country
+    def add(self, country: CountrySchema) -> CountrySchema:
+        entity = CountryDB(name=country.name, desc=country.desc)
 
-    def get_all(self) -> list[Country]:
-        return list(self.countries.values())
+        db_session.add(entity)
+        db_session.commit()
 
-    def get_by_id(self, uid: int) -> Country:
-        if uid not in self.countries:
-            raise NotFoundError('countries', uid)
-        return self.countries[uid]
+        return CountrySchema(uid=entity.uid, name=entity.name, desc=entity.desc)
 
-    def update(self, uid: int, country: Country) -> Country:
-        if uid not in self.countries:
-            raise NotFoundError('countries', uid)
-        self.countries[uid] = country
-        return country
+    def get_all(self) -> list[CountrySchema]:
+        entities = CountryDB.query.all()
+
+        return [
+            CountrySchema(uid=entity.uid, name=entity.name, desc=entity.desc)
+            for entity in entities
+        ]
+
+    def get_by_id(self, uid: int) -> CountrySchema:
+        entity = CountryDB.query.get(uid)
+        if not entity:
+            raise NotFoundError(self.name, uid)
+        return CountrySchema(uid=entity.uid, name=entity.name, desc=entity.desc)
+
+    def update(self, uid: int, country: CountrySchema) -> CountrySchema:
+        entity = CountryDB.query.get(uid)
+        if not entity:
+            raise NotFoundError(self.name, uid)
+        entity.name = country.name
+        entity.desc = country.desc
+
+        db_session.commit()
+
+        return CountrySchema(uid=entity.uid, name=entity.name, desc=entity.desc)
 
     def delete(self, uid: int) -> None:
-        if uid not in self.countries:
-            raise NotFoundError('countries', uid)
-        self.countries.pop(uid)
+        entity = CountryDB.query.get(uid)
+
+        if not entity:
+            raise NotFoundError(self.name, uid)
+
+        db_session.delete(entity)
+        db_session.commit()
