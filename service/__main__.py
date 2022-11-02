@@ -5,6 +5,7 @@ from pydantic import ValidationError
 
 from service.countries.views import country_view
 from service.errors import AppError
+from service.db import db_session
 
 app = Flask(__name__)
 
@@ -22,8 +23,13 @@ def handle_valid_error(error: ValidationError):
     return {'error': str(error)}, 400
 
 
+def shutdown_session(exception=None):
+    db_session.remove()
+
+
 app.register_error_handler(AppError, handle_app_error)
 app.register_error_handler(ValidationError, handle_valid_error)
+app.teardown_appcontext(shutdown_session)
 
 
 def main():

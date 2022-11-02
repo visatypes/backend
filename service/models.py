@@ -1,9 +1,9 @@
 from sqlalchemy import Column, Integer, String
 
-from service.countries.db import Base, engine
+from service.db import Base, engine
 
 
-class Country(Base):
+class CountryDB(Base):
     __tablename__ = 'countries'
 
     uid = Column(Integer, primary_key=True)
