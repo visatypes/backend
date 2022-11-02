@@ -4,12 +4,14 @@ from flask import Flask
 from pydantic import ValidationError
 
 from service.countries.views import country_view
-from service.errors import AppError
 from service.db import db_session
+from service.errors import AppError
+from service.visas.views import visa_view
 
 app = Flask(__name__)
 
 app.register_blueprint(country_view, url_prefix='/api/countries')
+app.register_blueprint(visa_view, url_prefix='/api/visas')
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
