@@ -9,8 +9,12 @@ class CountryDB(Base):
     __tablename__ = 'countries'
 
     uid = Column(Integer, primary_key=True)
-    name = Column(String)
-    desc = Column(String)
+    name = Column(String(length=20))
+    desc = Column(String(length=MAX_DESC_LEN))
+
+    __table_args__ = (
+        UniqueConstraint('name', name='сountry_name_uniq'),
+    )
 
 
 class Visa(Base):
