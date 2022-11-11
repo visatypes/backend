@@ -3,10 +3,13 @@ from flask import Blueprint, request
 from service.countries.schemas import Country
 from service.countries.storages import DBStorage
 from service.errors import AppError
+from service.visas.storages import VisaStorage
 
 country_view = Blueprint('countries', __name__)
 
 storage = DBStorage()
+
+visa_storage = VisaStorage()
 
 
 @country_view.post('/')
@@ -48,3 +51,10 @@ def update_by_id(uid):
 def delete_country(uid):
     storage.delete(uid)
     return {}, 204
+
+
+@country_view.get('/<int:uid>/visas/')
+def get_all_visas(uid):
+    visas = visa_storage.get_for_country(uid)
+    return [visa.dict() for visa in visas], 200
+
