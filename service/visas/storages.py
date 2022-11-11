@@ -1,6 +1,7 @@
 from service.db import db_session
 from service.errors import NotFoundError
-from service.models import Visa
+from service.models import CountryDB, Visa
+from service.visas.schemas import Visa as VisaSchema
 
 
 class VisaStorage:
@@ -44,3 +45,23 @@ class VisaStorage:
 
         db_session.delete(entity)
         db_session.commit()
+
+    def get_for_country(self, uid: int) -> list[VisaSchema]:
+        country = CountryDB.query.get(uid)
+
+        if not country:
+            raise NotFoundError('countries', uid)
+
+        entities = country.visas
+
+        all_visas = []
+
+        for visa in entities:
+            result = VisaSchema(uid=visa.uid,
+                    country_id=visa.country_id,
+                    name=visa.name,
+                    desc=visa.desc,
+            )
+            all_visas.append(result)
+
+        return all_visas
